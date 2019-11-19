@@ -62,3 +62,14 @@ Fix memory DOS in ImageFont
   unreasonably large sizes when rendering text in font. ``ImageFont.py`` did not check
   the image size before allocating memory for it.
 * This dates to the PIL fork.
+
+
+API Additions
+=============
+
+Custom unidentified image error
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Pillow will now throw a custom UnidentifiedImageError when an image cannot be
+identified. For backwards compatibility, this will inherit from IOError.
+
