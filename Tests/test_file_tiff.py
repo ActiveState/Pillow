@@ -589,8 +589,8 @@ class TestFileTiff(PillowTestCase):
 
     def test_string_dimension(self):
         # Assert that an error is raised if one of the dimensions is a string
-        with pytest.raises(OSError):
-            with Image.open("Tests/images/string_dimension.tiff") as im:
+        with Image.open("Tests/images/string_dimension.tiff") as im:
+            with pytest.raises(OSError):
                 im.load()
 
 

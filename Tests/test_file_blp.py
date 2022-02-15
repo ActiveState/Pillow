@@ -1,4 +1,5 @@
 from PIL import Image
+
 import pytest
 
 from .helper import PillowTestCase

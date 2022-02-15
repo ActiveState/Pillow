@@ -545,7 +545,7 @@ def _safe_read(fp, size):
     :param size: Number of bytes to read.
     :returns: A string containing <i>size</i> bytes of data.
 
-    Raises an OSError if the file is truncated and the read can not be completed
+    Raises an OSError if the file is truncated and the read cannot be completed
 
     """
     if size <= 0:
