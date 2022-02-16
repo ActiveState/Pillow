@@ -1,3 +1,5 @@
+import pytest
+
 from PIL import Image, PsdImagePlugin
 
 from .helper import PillowTestCase, hopper
