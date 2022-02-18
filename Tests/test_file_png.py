@@ -477,7 +477,9 @@ class TestFilePng(PillowTestCase):
             data = b"\x89" + fd.read()
 
         pngfile = BytesIO(data)
-        self.assertRaises(IOError, Image.open, pngfile)
+        with pytest.raises(OSError):
+            with Image.open(pngfile):
+                pass
 
     def test_trns_rgb(self):
         # Check writing and reading of tRNS chunks for RGB images.

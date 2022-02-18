@@ -196,7 +196,7 @@ class TestFileJpeg2k(PillowTestCase):
     def test_unbound_local(self):
         # prepatch, a malformed jp2 file could cause an UnboundLocalError
         # exception.
-        with self.assertRaises(IOError):
+        with self.assertRaises(OSError):
             Image.open("Tests/images/unbound_variable.jp2")
 
     def test_parser_feed(self):
@@ -227,4 +227,7 @@ def test_crashes(test_file):
     with open(test_file, "rb") as f:
         with Image.open(f) as im:
             # Valgrind should not complain here
-            im.load()
+            try:
+                im.load()
+            except OSError:
+                pass

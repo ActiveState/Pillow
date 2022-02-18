@@ -52,14 +52,15 @@ class TestFilePpm(PillowTestCase):
 
         self.assertRaises(ValueError, Image.open, path)
 
-    def test_neg_ppm(self):
+    def test_neg_ppm():
         # Storage.c accepted negative values for xsize, ysize.  the
         # internal open_ppm function didn't check for sanity but it
         # has been removed. The default opener doesn't accept negative
         # sizes.
 
-        with self.assertRaises(IOError):
-            Image.open("Tests/images/negative_size.ppm")
+        with pytest.raises(OSError):
+            with Image.open("Tests/images/negative_size.ppm"):
+                pass
 
     def test_mimetypes(self):
         path = self.tempfile("temp.pgm")

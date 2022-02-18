@@ -1,5 +1,7 @@
 from io import BytesIO
 
+import pytest
+
 from PIL import EpsImagePlugin, Image, ImageFile
 
 from .helper import PillowTestCase, fromstring, hopper, tostring, unittest
@@ -72,7 +74,8 @@ class TestImageFile(PillowTestCase):
             im1, im2 = roundtrip("JPEG")  # lossy compression
             self.assert_image(im1, im2.mode, im2.size)
 
-        self.assertRaises(IOError, roundtrip, "PDF")
+        with pytest.raises(OSError):
+            roundtrip("PDF")
 
     def test_ico(self):
         with open("Tests/images/python.ico", "rb") as f:
