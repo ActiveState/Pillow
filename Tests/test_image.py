@@ -49,7 +49,7 @@ class TestImage(PillowTestCase):
             self.assertEqual(str(e.exception), "unrecognized image mode")
 
     def test_exception_inheritance(self):
-        self.assertTrue(issubclass(UnidentifiedImageError, IOError))
+        assert issubclass(UnidentifiedImageError, OSError)
 
     def test_sanity(self):
 

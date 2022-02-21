@@ -1,6 +1,8 @@
 import tempfile
 from io import BytesIO
 
+import pytest
+
 from PIL import Image, ImageSequence, SpiderImagePlugin
 
 from .helper import PillowTestCase, hopper
@@ -106,7 +108,9 @@ class TestImageSpider(PillowTestCase):
     def test_invalid_file(self):
         invalid_file = "Tests/images/invalid.spider"
 
-        self.assertRaises(IOError, Image.open, invalid_file)
+        with pytest.raises(OSError):
+            with Image.open(invalid_file):
+                pass
 
     def test_nonstack_file(self):
         im = Image.open(TEST_FILE)

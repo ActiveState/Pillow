@@ -90,14 +90,17 @@ class TestImagePsd(PillowTestCase):
 
         self.assertNotIn("icc_profile", im.info)
 
+
     def test_combined_larger_than_size(self):
         # The 'combined' sizes of the individual parts is larger than the
         # declared 'size' of the extra data field, resulting in a backwards seek.
 
         # If we instead take the 'size' of the extra data field as the source of truth,
         # then the seek can't be negative
-        with self.assertRaises(IOError):
-            Image.open("Tests/images/combined_larger_than_size.psd")
+        with pytest.raises(OSError):
+            with Image.open("Tests/images/combined_larger_than_size.psd"):
+                pass
+
 
 @pytest.mark.parametrize(
     "test_file,raises",

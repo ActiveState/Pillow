@@ -1,7 +1,6 @@
 import logging
 import sys
 from io import BytesIO
-import pytest
 
 from PIL import Image, TiffImagePlugin
 from PIL._util import py3
@@ -239,9 +238,9 @@ class TestFileTiff(PillowTestCase):
         self.assertEqual(im.getextrema(), (-3.140936851501465, 3.140684127807617))
 
     def test_unknown_pixel_mode(self):
-        with pytest.raises(OSError):
-            with Image.open("Tests/images/hopper_unknown_pixel_mode.tif"):
-                pass
+        self.assertRaises(
+            IOError, Image.open, "Tests/images/hopper_unknown_pixel_mode.tif"
+        )
 
     def test_n_frames(self):
         for path, n_frames in [
@@ -590,8 +589,8 @@ class TestFileTiff(PillowTestCase):
 
     def test_string_dimension(self):
         # Assert that an error is raised if one of the dimensions is a string
-        with Image.open("Tests/images/string_dimension.tiff") as im:
-            with pytest.raises(OSError):
+        with pytest.raises(OSError):
+            with Image.open("Tests/images/string_dimension.tiff") as im:
                 im.load()
 
 

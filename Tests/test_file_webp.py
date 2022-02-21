@@ -1,3 +1,5 @@
+import pytest
+
 from PIL import Image, WebPImagePlugin
 
 from .helper import PillowTestCase, hopper, unittest
@@ -10,15 +12,13 @@ except ImportError:
     HAVE_WEBP = False
 
 
-class TestUnsupportedWebp(PillowTestCase):
+class TestUnsupportedWebp:
     def test_unsupported(self):
         if HAVE_WEBP:
             WebPImagePlugin.SUPPORTED = False
 
         file_path = "Tests/images/hopper.webp"
-        self.assert_warning(
-            UserWarning, lambda: self.assertRaises(IOError, Image.open, file_path)
-        )
+        pytest.warns(UserWarning, lambda: pytest.raises(OSError, Image.open, file_path))
 
         if HAVE_WEBP:
             WebPImagePlugin.SUPPORTED = True
