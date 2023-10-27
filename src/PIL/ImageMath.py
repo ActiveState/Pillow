@@ -240,6 +240,10 @@ def eval(expression, _dict={}, **kw):
     args.update(_dict)
     args.update(kw)
     for k, v in list(args.items()):
+        if '__' in k or hasattr(__builtins__, k):
+            msg = f"'{k}' not allowed"
+            raise ValueError(msg)
+
         if hasattr(v, "im"):
             args[k] = _Operand(v)
 
