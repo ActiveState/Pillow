@@ -12,18 +12,21 @@ from PIL import Image, ImageFilter, TiffImagePlugin, TiffTags, features
 from PIL.TiffImagePlugin import STRIPOFFSETS, SUBIFD
 
 from .helper import (
-    assert_image_equal,
-    assert_image_equal_tofile,
-    assert_image_similar,
-    assert_image_similar_tofile,
+    # assert_image_equal,
+    # assert_image_equal_tofile,
+    # assert_image_similar,
+    # assert_image_similar_tofile,
     hopper,
-    mark_if_feature_version,
-    skip_unless_feature,
+    # mark_if_feature_version,
+    # skip_unless_feature,
 )
 
 
-@skip_unless_feature("libtiff")
 class LibTiffTestCase:
+    def setUp(self):
+        if not features.check("libtiff"):
+            self.skipTest("tiff support not available")
+
     def _assert_noerr(self, tmp_path, im):
         """Helper tests that assert basic sanity about the g4 tiff reading"""
         # 1 bit
@@ -795,8 +798,8 @@ class TestFileLibTiff(LibTiffTestCase):
 
             assert_image_equal_tofile(im, "Tests/images/tiff_16bit_RGBa_target.png")
 
-    @skip_unless_feature("jpg")
     def test_gimp_tiff(self):
+
         # Read TIFF JPEG images from GIMP [@PIL168]
         filename = "Tests/images/pil168.tif"
         with Image.open(filename) as im:
@@ -834,17 +837,11 @@ class TestFileLibTiff(LibTiffTestCase):
         with Image.open(infile) as im:
             assert_image_similar_tofile(im, "Tests/images/pil_sample_cmyk.jpg", 0.5)
 
-    @mark_if_feature_version(
-        pytest.mark.valgrind_known_error, "libjpeg_turbo", "2.0", reason="Known Failing"
-    )
     def test_strip_ycbcr_jpeg_2x2_sampling(self):
         infile = "Tests/images/tiff_strip_ycbcr_jpeg_2x2_sampling.tif"
         with Image.open(infile) as im:
             assert_image_similar_tofile(im, "Tests/images/flower.jpg", 0.5)
 
-    @mark_if_feature_version(
-        pytest.mark.valgrind_known_error, "libjpeg_turbo", "2.0", reason="Known Failing"
-    )
     def test_strip_ycbcr_jpeg_1x1_sampling(self):
         infile = "Tests/images/tiff_strip_ycbcr_jpeg_1x1_sampling.tif"
         with Image.open(infile) as im:
@@ -855,17 +852,11 @@ class TestFileLibTiff(LibTiffTestCase):
         with Image.open(infile) as im:
             assert_image_similar_tofile(im, "Tests/images/pil_sample_cmyk.jpg", 0.5)
 
-    @mark_if_feature_version(
-        pytest.mark.valgrind_known_error, "libjpeg_turbo", "2.0", reason="Known Failing"
-    )
     def test_tiled_ycbcr_jpeg_1x1_sampling(self):
         infile = "Tests/images/tiff_tiled_ycbcr_jpeg_1x1_sampling.tif"
         with Image.open(infile) as im:
             assert_image_equal_tofile(im, "Tests/images/flower2.jpg")
 
-    @mark_if_feature_version(
-        pytest.mark.valgrind_known_error, "libjpeg_turbo", "2.0", reason="Known Failing"
-    )
     def test_tiled_ycbcr_jpeg_2x2_sampling(self):
         infile = "Tests/images/tiff_tiled_ycbcr_jpeg_2x2_sampling.tif"
         with Image.open(infile) as im:
