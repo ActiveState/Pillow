@@ -940,7 +940,7 @@ class ImageFileDirectory_v1(ImageFileDirectory_v2):
     tagdata = property(lambda self: self._tagdata)
 
     # defined in ImageFileDirectory_v2
-    tagtype
+    tagtype = {}
     """Dictionary of tag types"""
 
     @classmethod
