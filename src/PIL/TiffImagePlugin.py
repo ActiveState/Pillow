@@ -44,13 +44,19 @@ import logging
 import os
 import struct
 import warnings
-from collections.abc import MutableMapping
 from fractions import Fraction
 from numbers import Number, Rational
 
 from . import Image, ImageFile, ImagePalette, TiffTags
 from ._binary import o8
 from .TiffTags import TYPES
+
+try:
+    # Python 3
+    from collections.abc import MutableMapping
+except ImportError:
+    # Python 2.7
+    from collections import MutableMapping
 
 logger = logging.getLogger(__name__)
 
