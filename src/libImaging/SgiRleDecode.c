@@ -165,9 +165,9 @@ ImagingSgiRleDecode(Imaging im, ImagingCodecState state, UINT8 *buf, Py_ssize_t 
     int status;
 
     /* size check */
-    if (im->xsize > INT_MAX / im->bands || im->ysize > INT_MAX / im->bands) {
-        state->errcode = IMAGING_CODEC_MEMORY;
-        return -1;
+    if (im->xsize > INT_MAX / im->bands ||
+        im->ysize > INT_MAX / im->bands) {
+        return IMAGING_CODEC_MEMORY;
     }
 
     /* Get all data from File descriptor */
@@ -181,9 +181,8 @@ ImagingSgiRleDecode(Imaging im, ImagingCodecState state, UINT8 *buf, Py_ssize_t 
        each with 4 bytes per element of tablen
        Check here before we allocate any memory
     */
-    if (c->bufsize < 8 * c->tablen) {
-        state->errcode = IMAGING_CODEC_OVERRUN;
-        return -1;
+    if (c->bufsize < 8*c->tablen) {
+        return IMAGING_CODEC_MEMORY;
     }
 
     ptr = malloc(sizeof(UINT8) * c->bufsize);
