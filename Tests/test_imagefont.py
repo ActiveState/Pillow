@@ -751,3 +751,64 @@ class TestImageFont(PillowTestCase):
 @unittest.skipUnless(HAS_RAQM, "Raqm not Available")
 class TestImageFont_RaqmLayout(TestImageFont):
     LAYOUT_ENGINE = ImageFont.LAYOUT_RAQM
+
+
+def test_render_mono_size():
+    # issue 4177
+
+    im = Image.new("P", (100, 30), "white")
+    draw = ImageDraw.Draw(im)
+    ttf = ImageFont.truetype(
+        "Tests/fonts/DejaVuSans/DejaVuSans.ttf",
+        18,
+        layout_engine=ImageFont.Layout.BASIC,
+    )
+
+    draw.text((10, 10), "r" * 10, "black", ttf)
+    assert_image_equal_tofile(im, "Tests/images/text_mono.gif")
+
+
+def test_too_many_characters(font):
+    with pytest.raises(ValueError):
+        font.getlength("A" * 1000001)
+    with pytest.raises(ValueError):
+        font.getbbox("A" * 1000001)
+    with pytest.raises(ValueError):
+        font.getmask2("A" * 1000001)
+
+    transposed_font = ImageFont.TransposedFont(font)
+    with pytest.raises(ValueError):
+        transposed_font.getlength("A" * 1000001)
+
+    default_font = ImageFont.load_default()
+    with pytest.raises(ValueError):
+        default_font.getlength("A" * 1000001)
+    with pytest.raises(ValueError):
+        default_font.getbbox("A" * 1000001)
+
+
+@pytest.mark.parametrize(
+    "test_file",
+    [
+        "Tests/fonts/oom-e8e927ba6c0d38274a37c1567560eb33baf74627.ttf",
+        "Tests/fonts/oom-4da0210eb7081b0bf15bf16cc4c52ce02c1e1bbc.ttf",
+    ],
+)
+def test_oom(test_file):
+    with open(test_file, "rb") as f:
+        font = ImageFont.truetype(BytesIO(f.read()))
+        with pytest.raises(Image.DecompressionBombError):
+            font.getmask("Test Text")
+
+
+def test_raqm_missing_warning(monkeypatch):
+    monkeypatch.setattr(ImageFont.core, "HAVE_RAQM", False)
+    with pytest.warns(UserWarning) as record:
+        font = ImageFont.truetype(
+            FONT_PATH, FONT_SIZE, layout_engine=ImageFont.Layout.RAQM
+        )
+    assert font.layout_engine == ImageFont.Layout.BASIC
+    assert str(record[-1].message) == (
+        "Raqm layout was requested, but Raqm is not available. "
+        "Falling back to basic layout."
+    )

@@ -40,11 +40,20 @@ class _imagingft_not_installed(object):
     def __getattr__(self, id):
         raise ImportError("The _imagingft C module is not installed")
 
+MAX_STRING_LENGTH = 1000000
+
 
 try:
     from . import _imagingft as core
 except ImportError:
     core = _imagingft_not_installed()
+
+
+
+def _string_length_check(text):
+    if MAX_STRING_LENGTH is not None and len(text) > MAX_STRING_LENGTH:
+        msg = "too many characters in string"
+        raise ValueError(msg)
 
 
 # FIXME: add support for pilfont2 format (see FontFile.py)
@@ -138,6 +147,32 @@ class ImageFont(object):
                  :py:mod:`PIL.Image.core` interface module.
         """
         return self.font.getmask(text, mode)
+
+
+        .. versionadded:: 9.2.0
+
+        :param text: Text to render.
+        :param mode: Used by some graphics drivers to indicate what mode the
+                     driver prefers; if empty, the renderer may return either
+                     mode. Note that the mode is always a string, to simplify
+                     C-level implementations.
+
+        :return: ``(left, top, right, bottom)`` bounding box
+        """
+        _string_length_check(text)
+        width, height = self.font.getsize(text)
+        return 0, 0, width, height
+
+    def getlength(self, text, *args, **kwargs):
+        """
+        Returns length (in pixels) of given text.
+        This is the amount by which following text should be offset.
+
+        .. versionadded:: 9.2.0
+        """
+        _string_length_check(text)
+        width, height = self.font.getsize(text)
+        return width
 
 
 ##
@@ -251,11 +286,8 @@ class FreeTypeFont(object):
 
         :return: (width, height)
         """
-        size, offset = self.font.getsize(text, direction, features, language)
-        return (
-            size[0] + stroke_width * 2 + offset[0],
-            size[1] + stroke_width * 2 + offset[1],
-        )
+        _string_length_check(text)
+        return self.font.getlength(text, mode, direction, features, language) / 64
 
     def getsize_multiline(
         self,
@@ -306,14 +338,13 @@ class FreeTypeFont(object):
 
         :return: (width, height)
         """
-        max_width = 0
-        lines = self._multiline_split(text)
-        line_spacing = self.getsize("A", stroke_width=stroke_width)[1] + spacing
-        for line in lines:
-            line_width, line_height = self.getsize(
-                line, direction, features, language, stroke_width
-            )
-            max_width = max(max_width, line_width)
+        _string_length_check(text)
+        size, offset = self.font.getsize(
+            text, mode, direction, features, language, anchor
+        )
+        left, top = offset[0] - stroke_width, offset[1] - stroke_width
+        width, height = size[0] + 2 * stroke_width, size[1] + 2 * stroke_width
+        return left, top, left + width, top + height
 
         return max_width, len(lines) * line_spacing - spacing
 
@@ -460,11 +491,22 @@ class FreeTypeFont(object):
                  :py:mod:`PIL.Image.core` interface module, and the text offset, the
                  gap between the starting coordinate and the first marking
         """
-        size, offset = self.font.getsize(text, direction, features, language)
-        size = size[0] + stroke_width * 2, size[1] + stroke_width * 2
-        im = fill("L", size, 0)
-        self.font.render(
-            text, im.id, mode == "1", direction, features, language, stroke_width
+        _string_length_check(text)
+        if start is None:
+            start = (0, 0)
+        im, size, offset = self.font.render(
+            text,
+            Image.core.fill,
+            mode,
+            direction,
+            features,
+            language,
+            stroke_width,
+            anchor,
+            ink,
+            start[0],
+            start[1],
+            Image.MAX_IMAGE_PIXELS,
         )
         return im, offset
 
@@ -569,6 +611,14 @@ class TransposedFont(object):
         if self.orientation is not None:
             return im.transpose(self.orientation)
         return im
+
+
+    def getlength(self, text, *args, **kwargs):
+        if self.orientation in (Image.Transpose.ROTATE_90, Image.Transpose.ROTATE_270):
+            msg = "text length is undefined for text rotated by 90 or 270 degrees"
+            raise ValueError(msg)
+        _string_length_check(text)
+        return self.font.getlength(text, *args, **kwargs)
 
 
 def load(filename):
