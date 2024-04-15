@@ -10,6 +10,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, features
 
 from .helper import PillowTestCase, unittest
+import pytest
 
 FONT_PATH = "Tests/fonts/FreeMono.ttf"
 FONT_SIZE = 20

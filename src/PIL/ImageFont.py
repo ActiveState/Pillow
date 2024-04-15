@@ -148,6 +148,9 @@ class ImageFont(object):
         """
         return self.font.getmask(text, mode)
 
+    def getbbox(self, text, *args, **kwargs):
+        """
+        Returns bounding box (in pixels) of given text.
 
         .. versionadded:: 9.2.0
 
