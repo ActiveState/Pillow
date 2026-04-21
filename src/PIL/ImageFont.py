@@ -43,6 +43,9 @@ class Layout(IntEnum):
     RAQM = 1
 
 
+MAX_STRING_LENGTH = 1_000_000
+
+
 def __getattr__(name):
     for enum, prefix in {Layout: "LAYOUT_"}.items():
         if name.startswith(prefix):
@@ -63,6 +66,12 @@ except ImportError as ex:
 
 
 _UNSPECIFIED = object()
+
+
+def _string_length_check(text):
+    if MAX_STRING_LENGTH is not None and len(text) > MAX_STRING_LENGTH:
+        msg = "too many characters in string"
+        raise ValueError(msg)
 
 
 # FIXME: add support for pilfont2 format (see FontFile.py)
@@ -185,6 +194,7 @@ class ImageFont:
 
         :return: ``(left, top, right, bottom)`` bounding box
         """
+        _string_length_check(text)
         width, height = self.font.getsize(text)
         return 0, 0, width, height
 
@@ -195,6 +205,7 @@ class ImageFont:
 
         .. versionadded:: 9.2.0
         """
+        _string_length_check(text)
         width, height = self.font.getsize(text)
         return width
 
@@ -346,6 +357,7 @@ class FreeTypeFont:
 
         :return: Width for horizontal, height for vertical text.
         """
+        _string_length_check(text)
         return self.font.getlength(text, mode, direction, features, language) / 64
 
     def getbbox(
@@ -405,6 +417,7 @@ class FreeTypeFont:
 
         :return: ``(left, top, right, bottom)`` bounding box
         """
+        _string_length_check(text)
         size, offset = self.font.getsize(
             text, mode, direction, features, language, anchor
         )
@@ -749,6 +762,7 @@ class FreeTypeFont:
                  :py:mod:`PIL.Image.core` interface module, and the text offset, the
                  gap between the starting coordinate and the first marking
         """
+        _string_length_check(text)
         if fill is _UNSPECIFIED:
             fill = Image.core.fill
         else:
@@ -912,6 +926,7 @@ class TransposedFont:
         if self.orientation in (Image.Transpose.ROTATE_90, Image.Transpose.ROTATE_270):
             msg = "text length is undefined for text rotated by 90 or 270 degrees"
             raise ValueError(msg)
+        _string_length_check(text)
         return self.font.getlength(text, *args, **kwargs)
 
 
