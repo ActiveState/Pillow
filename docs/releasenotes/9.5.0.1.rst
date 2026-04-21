@@ -1,0 +1,11 @@
+9.5.0.1
+-------
+
+Security
+========
+
+CVE-2024-28219: Use strncpy to avoid buffer overflow
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To help prevent potential buffer overflows in ``_imagingcms.c``, ``strcpy``
+has been replaced with ``strncpy``.
