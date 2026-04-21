@@ -9,3 +9,22 @@ CVE-2024-28219: Use strncpy to avoid buffer overflow
 
 To help prevent potential buffer overflows in ``_imagingcms.c``, ``strcpy``
 has been replaced with ``strncpy``.
+
+CVE-2023-50447: Restricted environment keys for ImageMath.eval()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:py:meth:`~PIL.ImageMath.eval` now raises a ``ValueError`` if the ``expression``
+parameter contains a dictionary key that either contains ``__`` or matches the
+name of one of the Python builtins.
+
+CVE-2023-44271: Added ImageFont.MAX_STRING_LENGTH
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To protect against potential DOS attacks when using arbitrary strings as text
+input, Pillow will now raise a ``ValueError`` if the number of characters
+passed into ImageFont methods is over a certain limit,
+:py:data:`PIL.ImageFont.MAX_STRING_LENGTH`.
+
+This threshold can be changed by setting
+:py:data:`PIL.ImageFont.MAX_STRING_LENGTH`. It can be disabled by setting
+``ImageFont.MAX_STRING_LENGTH = None``.
