@@ -4,6 +4,13 @@
 Security
 ========
 
+CVE-2023-50447: Restricted environment keys for ImageMath.eval()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:py:meth:`~PIL.ImageMath.eval` now raises a ``ValueError`` if the ``expression``
+parameter contains a dictionary key that either contains ``__`` or matches the
+name of one of the Python builtins.
+
 CVE-2023-44271: Added ImageFont.MAX_STRING_LENGTH
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
