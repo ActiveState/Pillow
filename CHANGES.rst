@@ -2,6 +2,28 @@
 Changelog (Pillow)
 ==================
 
+6.2.2.9 (2026-05-28)
+---------------------
+
+Security
+========
+
+- Fix CVE-2024-28219: Buffer overflow in ``_imagingcms.c`` ``cms_transform_new()``.
+  Two ``strcpy()`` calls copied mode strings into fixed 8-byte buffers without bounds
+  checking. Replaced with ``strncpy()`` and explicit null-termination.
+  [martinPavesio]
+
+- Fix CVE-2026-42310: PDF ``PdfParser`` trailer pointer infinite loop. ``read_prev_trailer()``
+  followed ``Prev`` pointers without cycle detection, allowing a malicious PDF to cause
+  100% CPU usage. Added cycle detection that raises ``PdfFormatError`` on a loop.
+  [martinPavesio]
+
+- Fix GHSA-4fx9-vc88-q2xc: JPEG infinite loop when ``LOAD_TRUNCATED_IMAGES`` is enabled
+  on a truncated file. ``JpegImagePlugin`` now sets ``_ended`` on first synthetic EOF to
+  prevent re-entry.
+  [martinPavesio]
+
+
 6.2.2.8
 -------
 

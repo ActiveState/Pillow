@@ -213,8 +213,10 @@ cms_transform_new(cmsHTRANSFORM transform, char* mode_in, char* mode_out)
 
     self->transform = transform;
 
-    strcpy(self->mode_in, mode_in);
-    strcpy(self->mode_out, mode_out);
+    strncpy(self->mode_in, mode_in, 8);
+    self->mode_in[7] = '\0';
+    strncpy(self->mode_out, mode_out, 8);
+    self->mode_out[7] = '\0';
 
     return (PyObject*) self;
 }

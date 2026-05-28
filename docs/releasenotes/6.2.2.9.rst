@@ -1,0 +1,22 @@
+6.2.2.9
+-------
+
+Security
+========
+
+- :cve:`2024-28219`: Fixed buffer overflow in ``_imagingcms.c``
+  ``cms_transform_new()``. Two ``strcpy()`` calls copied mode strings into
+  fixed 8-byte buffers without bounds checking. Replaced with ``strncpy()``
+  and explicit null-termination.
+  [martinPavesio]
+
+- :cve:`2026-42310`: Fixed PDF ``PdfParser`` trailer pointer infinite loop.
+  ``read_prev_trailer()`` followed ``Prev`` pointers without cycle detection,
+  allowing a malicious PDF to cause 100% CPU usage. Added cycle detection
+  that raises ``PdfFormatError`` on a loop.
+  [martinPavesio]
+
+- Fixed JPEG infinite loop when ``LOAD_TRUNCATED_IMAGES`` is enabled on a
+  truncated file. ``JpegImagePlugin`` now sets ``_ended`` on first synthetic
+  EOF to prevent re-entry. (GHSA-4fx9-vc88-q2xc)
+  [martinPavesio]

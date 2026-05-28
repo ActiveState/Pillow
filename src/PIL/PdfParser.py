@@ -682,7 +682,10 @@ class PdfParser:
         if b"Prev" in self.trailer_dict:
             self.read_prev_trailer(self.trailer_dict[b"Prev"])
 
-    def read_prev_trailer(self, xref_section_offset):
+    def read_prev_trailer(self, xref_section_offset, processed_offsets=None):
+        # Backport of CVE-2026-42310: detect and break trailer pointer cycles
+        if processed_offsets is None:
+            processed_offsets = []
         trailer_offset = self.read_xref_table(xref_section_offset=xref_section_offset)
         m = self.re_trailer_prev.search(
             self.buf[trailer_offset : trailer_offset + 16384]
@@ -695,7 +698,12 @@ class PdfParser:
         )
         trailer_dict = self.interpret_trailer(trailer_data)
         if b"Prev" in trailer_dict:
-            self.read_prev_trailer(trailer_dict[b"Prev"])
+            processed_offsets.append(xref_section_offset)
+            check_format_condition(
+                trailer_dict[b"Prev"] not in processed_offsets,
+                "trailer loop found",
+            )
+            self.read_prev_trailer(trailer_dict[b"Prev"], processed_offsets)
 
     re_whitespace_optional = re.compile(whitespace_optional)
     re_name = re.compile(
