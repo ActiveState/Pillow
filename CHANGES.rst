@@ -2,6 +2,18 @@
 Changelog (Pillow)
 ==================
 
+6.2.2.10 (2026-05-29)
+----------------------
+
+Security
+========
+
+- Assessment CVE-2026-42308: Integer overflow in ``_imagingft.c``
+  ``bounding_box_and_anchors()``. **Not applicable** — this function was
+  introduced in Pillow 12.x and does not exist in 6.2.2. No code change required.
+  [martinPavesio]
+
+
 6.2.2.9 (2026-05-28)
 ---------------------
 
