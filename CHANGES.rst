@@ -14,6 +14,12 @@ Security
   [martinPavesio]
 
 
+- Assessment GHSA-jgpv-4h4c-xhw3: BLP container memory DoS. **Already fixed** —
+  Image._decompression_bomb_check() was added to BlpImagePlugin.py in a
+  prior 6.2.x backport. Confirmed present at line 359 of the current source.
+  [martinPavesio]
+
+
 6.2.2.9 (2026-05-28)
 ---------------------
 
