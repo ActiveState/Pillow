@@ -742,8 +742,12 @@ class pil_build_ext(build_ext):
         if sys.platform == "win32":
             sharpyuv = "libsharpyuv"
 
+        bziplib = "bz2"
+        if sys.platform == "win32":
+            bziplib = "libbz2"
+
         if feature.freetype:
-            libs = ["freetype", pnglib, "bz2", zlib]
+            libs = ["freetype", pnglib, bziplib, zlib]
             defs = []
             exts.append(
                 Extension(
@@ -767,7 +771,12 @@ class pil_build_ext(build_ext):
             )
 
         if feature.webp:
-            libs = [feature.webp, sharpyuv]
+            libs = [feature.webp]
+            # On legacy 32-bit Windows, sharpyuv is not available to link against.
+            if sys.platform == "win32" and (8 * struct.calcsize("P")) == 32:
+                print("32-bit Windows: no sharpyuv")
+            else:
+                libs.append(sharpyuv)
             defs = []
 
             if feature.webpmux:
